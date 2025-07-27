@@ -54,7 +54,38 @@ contract AuditRegistry is Ownable, ReentrancyGuard {
     
     }
 
-    
 
+    function addAuthorizedAuditor(address auditor) external onlyOwner {
+        authorizedAuditors[auditor] = true;
+    }
+
+    function removeAuthorizedAuditor(address auditor) external onlyOwner {
+        authorizedAuditors[auditor]= false;
+    }
+
+   function submitAuditResult(
+        address tokenAddress,
+        uint256 riskScore,
+        bool isScam,
+        bool isHoneypot,
+        string calldata ipfsHash
+    ) external onlyAuthorizedAuditor nonReentrant {
+        require(tokenAddress != address(0), "Invalid token address");
+        require(riskScore <= 100, "Risk score must be <= 100");
+        
+        auditRecords[tokenAddress] = AuditRecord({
+            tokenAddress: tokenAddress,
+            riskScore: riskScore,
+            isScam: isScam,
+            isHoneypot: isHoneypot,
+            auditTimestamp: block.timestamp,
+            auditor: msg.sender,
+            ipfsHash: ipfsHash
+        });
+        
+        auditCount[msg.sender]++;
+        
+        emit AuditCompleted(tokenAddress, msg.sender, riskScore, isScam, block.timestamp);
+    }
 
 }
