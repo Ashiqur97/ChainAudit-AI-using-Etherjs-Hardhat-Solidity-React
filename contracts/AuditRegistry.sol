@@ -22,48 +22,45 @@ contract AuditRegistry is Ownable, ReentrancyGuard {
         bool liquidityLocked;
         uint256 lastUpdated;
     }
-
-    mapping (address => AuditRecord) public auditRecords;
-    mapping (address => TokenMetrics) public tokenMetrics;
-    mapping (address => bool) public authorizedAuditors;
-    mapping (address => uint256) public auditCount;
-
-   event AuditCompleted(
-    address indexed token,
-    address indexed auditor,
-    uint256 riskScore,
-    bool isScam,
-    uint256 timestamp
+    
+    mapping(address => AuditRecord) public auditRecords;
+    mapping(address => TokenMetrics) public tokenMetrics;
+    mapping(address => bool) public authorizedAuditors;
+    mapping(address => uint256) public auditCount;
+    
+    event AuditCompleted(
+        address indexed token,
+        address indexed auditor,
+        uint256 riskScore,
+        bool isScam,
+        uint256 timestamp
     );
-
+    
     event TokenMetricsUpdated(
         address indexed token,
         uint256 transactions,
         uint256 holders,
         uint256 liquidity
     );
-
- modifier onlyAuthorizedAuditor() {
-    require(authorizedAuditors[msg.sender] || msg.sender == owner(), "Not authorized auditor");
-    _;
-   
-    }
-
-    constructor() Ownable(msg.sender) {
-    authorizedAuditors[msg.sender] = true;
     
+    modifier onlyAuthorizedAuditor() {
+        require(authorizedAuditors[msg.sender] || msg.sender == owner(), "Not authorized auditor");
+        _;
     }
-
-
+    
+    constructor() Ownable(msg.sender) {
+        authorizedAuditors[msg.sender] = true;
+    }
+    
     function addAuthorizedAuditor(address auditor) external onlyOwner {
         authorizedAuditors[auditor] = true;
     }
-
+    
     function removeAuthorizedAuditor(address auditor) external onlyOwner {
-        authorizedAuditors[auditor]= false;
+        authorizedAuditors[auditor] = false;
     }
-
-   function submitAuditResult(
+    
+    function submitAuditResult(
         address tokenAddress,
         uint256 riskScore,
         bool isScam,
@@ -87,5 +84,38 @@ contract AuditRegistry is Ownable, ReentrancyGuard {
         
         emit AuditCompleted(tokenAddress, msg.sender, riskScore, isScam, block.timestamp);
     }
-
+    
+    function updateTokenMetrics(
+        address tokenAddress,
+        uint256 totalTransactions,
+        uint256 uniqueHolders,
+        uint256 liquidityUSD,
+        bool liquidityLocked
+    ) external onlyAuthorizedAuditor {
+        tokenMetrics[tokenAddress] = TokenMetrics({
+            totalTransactions: totalTransactions,
+            uniqueHolders: uniqueHolders,
+            liquidityUSD: liquidityUSD,
+            liquidityLocked: liquidityLocked,
+            lastUpdated: block.timestamp
+        });
+        
+        emit TokenMetricsUpdated(tokenAddress, totalTransactions, uniqueHolders, liquidityUSD);
+    }
+    
+    function getAuditRecord(address tokenAddress) external view returns (AuditRecord memory) {
+        return auditRecords[tokenAddress];
+    }
+    
+    function getTokenMetrics(address tokenAddress) external view returns (TokenMetrics memory) {
+        return tokenMetrics[tokenAddress];
+    }
+    
+    function isTokenAudited(address tokenAddress) external view returns (bool) {
+        return auditRecords[tokenAddress].auditTimestamp > 0;
+    }
+    
+    function getAuditorStats(address auditor) external view returns (uint256) {
+        return auditCount[auditor];
+    }
 }
