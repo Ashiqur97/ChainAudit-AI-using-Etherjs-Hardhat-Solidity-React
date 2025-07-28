@@ -24,4 +24,18 @@ contract TokenAnakyzer is Ownable, ReentrancyGuard {
     }
 
      constructor(address initialOwner) Ownable(initialOwner) {}
+
+     struct SecurityFlags {
+        bool hasOwner;
+        bool hasMintFunction;
+        bool hasBurnFunction;
+        bool hasPuseFunction;
+        bool hasBlacklistFunction;
+        bool ownershipRenounced;
+     }
+
+     event TokenAnalyzed(address indexed token, address indexed analyzer, uint256 timestamp);
+    
+    mapping(address => TokenInfo) private analyzedTokens;
+    mapping(address => SecurityFlags) private securityAnalysis;
 }
