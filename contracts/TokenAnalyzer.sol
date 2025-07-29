@@ -38,4 +38,23 @@ contract TokenAnakyzer is Ownable, ReentrancyGuard {
     
     mapping(address => TokenInfo) private analyzedTokens;
     mapping(address => SecurityFlags) private securityAnalysis;
+
+    function analyzedTokens(address tokenAddress) external nonReentrant returns (TokenInfo memory) {
+        require(tokenAddress!= address(0),"Invalid token address");
+
+        TokenInfo memory info;
+
+        try IERC20Extended(tokenAddress).name() returns (string memory name) {
+            info.name = name;
+        } catch {
+            info.name = "Unknown";
+        }
+
+         try IERC20Extended(tokenAddress).symbol() returns (string memory symbol) {
+            info.symbol = symbol;
+         } catch {
+            info.symbol = "UNKNOWN";
+         }
+    }
+
 }
