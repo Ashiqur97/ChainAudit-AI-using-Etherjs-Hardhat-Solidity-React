@@ -90,4 +90,21 @@ contract TokenAnakyzer is Ownable, ReentrancyGuard {
         return securityAnalysis[tokenAddress]
     }
 
+    function SecurityFlags(
+        address tokenAddress,
+        bool hasOwner,
+        bool hasMintFunction,
+        bool hasPuseFunction,
+        bool hasBlacklistFunction,
+        bool ownershipRenounced
+    ) external onlyOwner {
+           securityAnalysis[tokenAddress] = SecurityFlags({
+            hasOwner: hasOwner,
+            hasMintFunction: hasMintFunction,
+            hasBurnFunction: hasBurnFunction,
+            hasPauseFunction: hasPauseFunction,
+            hasBlacklistFunction: hasBlacklistFunction,
+            ownershipRenounced: ownershipRenounced
+        });
+    }
 }
