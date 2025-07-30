@@ -107,4 +107,16 @@ contract TokenAnakyzer is Ownable, ReentrancyGuard {
             ownershipRenounced: ownershipRenounced
         });
     }
+
+    function calculateRiskScore(address tokenAddress) external view returns (uint256) {
+               SecurityFlags memory flags = securityAnalysis[tokenAddress];
+        uint256 riskScore = 0;
+        
+        if (flags.hasOwner && !flags.ownershipRenounced) riskScore += 20;
+        if (flags.hasMintFunction) riskScore += 25;
+        if (flags.hasPauseFunction) riskScore += 15;
+        if (flags.hasBlacklistFunction) riskScore += 30;
+        if (!flags.hasBurnFunction) riskScore += 10;
+        return riskScore;
+    }
 }
