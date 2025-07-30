@@ -109,7 +109,7 @@ contract TokenAnakyzer is Ownable, ReentrancyGuard {
     }
 
     function calculateRiskScore(address tokenAddress) external view returns (uint256) {
-               SecurityFlags memory flags = securityAnalysis[tokenAddress];
+        SecurityFlags memory flags = securityAnalysis[tokenAddress];
         uint256 riskScore = 0;
         
         if (flags.hasOwner && !flags.ownershipRenounced) riskScore += 20;
@@ -118,5 +118,17 @@ contract TokenAnakyzer is Ownable, ReentrancyGuard {
         if (flags.hasBlacklistFunction) riskScore += 30;
         if (!flags.hasBurnFunction) riskScore += 10;
         return riskScore;
+    }
+
+      function batchAnalyze(address[] calldata tokens) external nonReentrant returns (TokenInfo[] memory) {
+        require(tokens.length <= 10, "Too many tokens to analyze at once");
+        
+        TokenInfo[] memory results = new TokenInfo[](tokens.length);
+        
+        for (uint256 i = 0; i < tokens.length; i++) {
+            results[i] = this.analyzeToken(tokens[i]);
+        }
+        
+        return results;
     }
 }
