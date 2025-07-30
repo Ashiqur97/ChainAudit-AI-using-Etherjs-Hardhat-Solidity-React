@@ -62,7 +62,32 @@ contract TokenAnakyzer is Ownable, ReentrancyGuard {
             info.symbol = "UNKNOWN";
          }
 
-         
+         try IERC20Extended(tokenAddress).decimals() returns (uint8 decimals) {
+            info.decimals = decimals;
+         } catch {
+            info.decimals = 18;
+         }
+
+              try IERC20Extended(tokenAddress).totalSupply() returns (uint256 supply) {
+            info.totalSupply = supply;
+            info.exists = true;
+        } catch {
+            info.exists = false;
+        }
+        
+        try IERC20Extended(tokenAddress).owner() returns (address owner) {
+            info.owner = owner;
+        } catch {
+            info.owner = address(0);
+        }
+    }
+
+    function getTokenInfo(address tokenAddress) external view returns (TokenInfo memory) {
+        return analyzedTokens[tokenAddress];
+    }
+
+    function checkSecurityFlags(address tokenAddress) external view returns (SecurityFlags memory) {
+        return securityAnalysis[tokenAddress]
     }
 
 }
