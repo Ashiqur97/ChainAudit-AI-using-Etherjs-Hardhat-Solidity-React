@@ -55,6 +55,14 @@ contract TokenAnakyzer is Ownable, ReentrancyGuard {
          } catch {
             info.symbol = "UNKNOWN";
          }
+
+         try IERC20Extended(tokenAddress).symbol() returns (string memory symbol) {
+            info.symbol = symbol;
+         } catch {
+            info.symbol = "UNKNOWN";
+         }
+
+         
     }
 
 }
