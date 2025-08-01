@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -20,8 +20,6 @@ contract ScamDetector is Ownable {
         bool isHoneypot;
         uint256 riskScore;
     }
-    
-    constructor() Ownable(msg.sender) {}
     
     mapping(address => ScamFlags) public scamAnalysis;
     mapping(address => bool) public knownScams;

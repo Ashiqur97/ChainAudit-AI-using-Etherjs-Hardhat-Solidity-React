@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 interface IERC20Extended {
     function name() external view returns (string memory);
@@ -13,7 +13,7 @@ interface IERC20Extended {
     function owner() external view returns (address);
 }
 
-contract TokenAnakyzer is Ownable, ReentrancyGuard {
+contract TokenAnalyzer is Ownable, ReentrancyGuard {
     struct TokenInfo {
         string name;
         string symbol;
@@ -22,53 +22,47 @@ contract TokenAnakyzer is Ownable, ReentrancyGuard {
         address owner;
         bool exists;
     }
-
-     constructor(address initialOwner) Ownable(initialOwner) {}
-
-     struct SecurityFlags {
+    
+    struct SecurityFlags {
         bool hasOwner;
         bool hasMintFunction;
         bool hasBurnFunction;
-        bool hasPuseFunction;
+        bool hasPauseFunction;
         bool hasBlacklistFunction;
         bool ownershipRenounced;
-     }
-
-     event TokenAnalyzed(address indexed token, address indexed analyzer, uint256 timestamp);
+    }
+    
+    event TokenAnalyzed(address indexed token, address indexed analyzer, uint256 timestamp);
     
     mapping(address => TokenInfo) private analyzedTokens;
     mapping(address => SecurityFlags) private securityAnalysis;
-
-    function analyzedTokens(address tokenAddress) external nonReentrant returns (TokenInfo memory) {
-        require(tokenAddress!= address(0),"Invalid token address");
-
+    
+    constructor() {}
+    
+    function analyzeToken(address tokenAddress) external nonReentrant returns (TokenInfo memory) {
+        require(tokenAddress != address(0), "Invalid token address");
+        
         TokenInfo memory info;
-
+        
         try IERC20Extended(tokenAddress).name() returns (string memory name) {
             info.name = name;
         } catch {
             info.name = "Unknown";
         }
-
-         try IERC20Extended(tokenAddress).symbol() returns (string memory symbol) {
+        
+        try IERC20Extended(tokenAddress).symbol() returns (string memory symbol) {
             info.symbol = symbol;
-         } catch {
+        } catch {
             info.symbol = "UNKNOWN";
-         }
-
-         try IERC20Extended(tokenAddress).symbol() returns (string memory symbol) {
-            info.symbol = symbol;
-         } catch {
-            info.symbol = "UNKNOWN";
-         }
-
-         try IERC20Extended(tokenAddress).decimals() returns (uint8 decimals) {
+        }
+        
+        try IERC20Extended(tokenAddress).decimals() returns (uint8 decimals) {
             info.decimals = decimals;
-         } catch {
+        } catch {
             info.decimals = 18;
-         }
-
-              try IERC20Extended(tokenAddress).totalSupply() returns (uint256 supply) {
+        }
+        
+        try IERC20Extended(tokenAddress).totalSupply() returns (uint256 supply) {
             info.totalSupply = supply;
             info.exists = true;
         } catch {
@@ -80,25 +74,31 @@ contract TokenAnakyzer is Ownable, ReentrancyGuard {
         } catch {
             info.owner = address(0);
         }
+        
+        analyzedTokens[tokenAddress] = info;
+        emit TokenAnalyzed(tokenAddress, msg.sender, block.timestamp);
+        
+        return info;
     }
-
+    
     function getTokenInfo(address tokenAddress) external view returns (TokenInfo memory) {
         return analyzedTokens[tokenAddress];
     }
-
+    
     function checkSecurityFlags(address tokenAddress) external view returns (SecurityFlags memory) {
-        return securityAnalysis[tokenAddress]
+        return securityAnalysis[tokenAddress];
     }
-
-    function SecurityFlags(
+    
+    function setSecurityFlags(
         address tokenAddress,
         bool hasOwner,
         bool hasMintFunction,
-        bool hasPuseFunction,
+        bool hasBurnFunction,
+        bool hasPauseFunction,
         bool hasBlacklistFunction,
         bool ownershipRenounced
     ) external onlyOwner {
-           securityAnalysis[tokenAddress] = SecurityFlags({
+        securityAnalysis[tokenAddress] = SecurityFlags({
             hasOwner: hasOwner,
             hasMintFunction: hasMintFunction,
             hasBurnFunction: hasBurnFunction,
@@ -107,7 +107,7 @@ contract TokenAnakyzer is Ownable, ReentrancyGuard {
             ownershipRenounced: ownershipRenounced
         });
     }
-
+    
     function calculateRiskScore(address tokenAddress) external view returns (uint256) {
         SecurityFlags memory flags = securityAnalysis[tokenAddress];
         uint256 riskScore = 0;
@@ -117,10 +117,11 @@ contract TokenAnakyzer is Ownable, ReentrancyGuard {
         if (flags.hasPauseFunction) riskScore += 15;
         if (flags.hasBlacklistFunction) riskScore += 30;
         if (!flags.hasBurnFunction) riskScore += 10;
+        
         return riskScore;
     }
-
-      function batchAnalyze(address[] calldata tokens) external nonReentrant returns (TokenInfo[] memory) {
+    
+    function batchAnalyze(address[] calldata tokens) external nonReentrant returns (TokenInfo[] memory) {
         require(tokens.length <= 10, "Too many tokens to analyze at once");
         
         TokenInfo[] memory results = new TokenInfo[](tokens.length);
