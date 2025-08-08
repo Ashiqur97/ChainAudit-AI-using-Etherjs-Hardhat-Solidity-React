@@ -10,6 +10,7 @@ import { vulnerabilityAnalysisService } from './services/vulnerabilityAnalysisSe
 import { AuditResult } from './types/audit';
 import { VulnerabilityAnalysisResult } from './services/vulnerabilityAnalysisService';
 
+
 function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
