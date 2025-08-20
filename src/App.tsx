@@ -10,7 +10,6 @@ import { vulnerabilityAnalysisService } from './services/vulnerabilityAnalysisSe
 import { AuditResult } from './types/audit';
 import { VulnerabilityAnalysisResult } from './services/vulnerabilityAnalysisService';
 
-
 function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -116,6 +115,11 @@ function App() {
         onToggleDarkMode={toggleDarkMode}
         onExportReport={handleExportReport}
         isLoading={!auditResults}
+        tokenInfo={auditResults ? {
+          name: auditResults.tokenInfo.name,
+          symbol: auditResults.tokenInfo.symbol,
+          priceChange: auditResults.riskAssessment?.priceVolatility || 2.5
+        } : undefined}
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
