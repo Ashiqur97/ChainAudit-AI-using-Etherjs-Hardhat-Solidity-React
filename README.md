@@ -18,7 +18,6 @@ A comprehensive cryptocurrency token audit tool built with modern web technologi
 
 ### 📱 Social Sentiment Analysis (Unique Feature #2)
 - Real-time social media monitoring
-- Twitter, Reddit, Telegram integration
 - Influencer mention tracking
 - Community health scoring
 
@@ -65,7 +64,6 @@ A comprehensive cryptocurrency token audit tool built with modern web technologi
 - **html2canvas** for component export
 - **Axios** for API requests
 - **OpenAI API** for AI risk prediction
-- **Twitter API** for social sentiment
 
 ## Getting Started
 
@@ -138,28 +136,3 @@ The application includes a Solidity contract for on-chain token analysis:
 - **Security Flags**: Automated detection of risky functions
 - **Batch Analysis**: Analyze multiple tokens efficiently
 - **Risk Scoring**: Algorithmic risk assessment
-
-## API Integration
-
-The tool integrates with various blockchain APIs:
-
-- Ethereum mainnet data
-- DEX liquidity information
-- Transaction history
-- Token metadata
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License.
-
-## Disclaimer
-
-This tool is for informational purposes only. Always conduct your own research before making investment decisions. The developers are not responsible for any financial losses.
