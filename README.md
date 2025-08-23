@@ -6,7 +6,7 @@ A comprehensive cryptocurrency token audit tool built with modern web technologi
 
 ### 🔒 Security Analysis
 - Real-time smart contract security assessment
-- Honeypot and scam detection
+- Scam detection
 - Risk scoring with detailed analysis
 - Buy/sell restriction detection
 
