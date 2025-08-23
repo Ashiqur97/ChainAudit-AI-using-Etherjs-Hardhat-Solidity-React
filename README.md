@@ -10,12 +10,6 @@ A comprehensive cryptocurrency token audit tool built with modern web technologi
 - Risk scoring with detailed analysis
 - Buy/sell restriction detection
 
-### 🤖 AI-Powered Risk Prediction (Unique Feature #1)
-- Machine learning risk assessment
-- Market trend analysis and prediction
-- Confidence-based recommendations
-- Advanced pattern recognition
-
 ### 📱 Social Sentiment Analysis (Unique Feature #2)
 - Real-time social media monitoring
 - Influencer mention tracking
